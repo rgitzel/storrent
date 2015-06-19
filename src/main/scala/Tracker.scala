@@ -14,7 +14,7 @@ object Tracker {
   def hexStringURLEncode(x: String) = { x.grouped(2).toList.map("%" + _).mkString("") }
 
   def torrentFromBencode(torrentName: String) = {
-    val source = scala.io.Source.fromFile(torrentName, "macintosh")
+    val source = scala.io.Source.fromFile(torrentName)
     val metainfo = source.mkString
     source.close()
     val decodedMeta = BencodeDecoder.decode(metainfo)
@@ -56,7 +56,7 @@ object Tracker {
 
   def getTrackerResponse(completeUrl: String) = {
     val url = new URL(completeUrl)
-    val trackerResponse = fromInputStream(url.openStream, "macintosh").getLines.mkString("\n")
+    val trackerResponse = fromInputStream(url.openStream).getLines.mkString("\n")
     val someTrackerResponse = BencodeDecoder.decode(trackerResponse).get.asInstanceOf[Map[String, Any]]
     val peers = someTrackerResponse.get("peers").get.asInstanceOf[String]
     val interval = someTrackerResponse.get("interval").get.asInstanceOf[Long]
