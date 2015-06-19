@@ -18,7 +18,9 @@ object Tracker {
     val metainfo = source.mkString
     source.close()
     val decodedMeta = BencodeDecoder.decode(metainfo)
-    decodedMeta.get.asInstanceOf[Map[String, Any]]
+    val m = decodedMeta.get.asInstanceOf[Map[String, Any]]
+    println("keys: " + m.keys.mkString(", "))
+    m
   }
 
   def getTorrentFileVariables(infoMap: Map[String, Any]) = {
@@ -29,7 +31,7 @@ object Tracker {
     (fileLength, pieceLength, numPieces)
   }
 
-  def assembleTrackerUrl(infoMap: Map[String, Any]) = {
+  def assembleTrackerUrl(baseUrl: String, infoMap: Map[String, Any]) = {
     val encodedInfoMap = BencodeEncoder.encode(infoMap)
     val md = java.security.MessageDigest.getInstance("SHA-1")
     val infoSHABytes = md.digest(encodedInfoMap.getBytes).map(0xFF & _)
@@ -40,10 +42,6 @@ object Tracker {
     val infoSHAParam = s"info_hash=${infoSHAEncoded}"
     val peerIdParam = s"peer_id=${infoSHAEncoded}" //FIXME: peer id should obviously not be the same as our hash
     val allParams = s"?${infoSHAParam}&${peerIdParam}&${encodedParams}"
-List("length", "announce", "announce-list").foreach{ name =>
-  println(s"$name => ${infoMap.get(name)}")
-}
-    val baseUrl = infoMap.get("announce").get
     val completeUrl = baseUrl + allParams
     println(completeUrl)
     (infoSHABytes, completeUrl)
@@ -54,7 +52,7 @@ List("length", "announce", "announce-list").foreach{ name =>
     // or deconstruct these
     val infoMap = metaMap.get("info").get.asInstanceOf[Map[String, Any]]
 
-    val (infoSHABytes, completeUrl) = assembleTrackerUrl(infoMap)
+    val (infoSHABytes, completeUrl) = assembleTrackerUrl(metaMap.get("announce").get.asInstanceOf[String], infoMap)
     val (fileLength, pieceLength, numPieces) = getTorrentFileVariables(infoMap)
     (infoSHABytes, fileLength, pieceLength, numPieces, completeUrl)
   }
