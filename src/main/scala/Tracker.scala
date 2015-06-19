@@ -40,7 +40,12 @@ object Tracker {
     val infoSHAParam = s"info_hash=${infoSHAEncoded}"
     val peerIdParam = s"peer_id=${infoSHAEncoded}" //FIXME: peer id should obviously not be the same as our hash
     val allParams = s"?${infoSHAParam}&${peerIdParam}&${encodedParams}"
-    val completeUrl = "http://thomasballinger.com:6969/announce" + allParams
+List("length", "announce", "announce-list").foreach{ name =>
+  println(s"$name => ${infoMap.get(name)}")
+}
+    val baseUrl = infoMap.get("announce").get
+    val completeUrl = baseUrl + allParams
+    println(completeUrl)
     (infoSHABytes, completeUrl)
   }
 
