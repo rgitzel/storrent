@@ -51,7 +51,7 @@ Binding socket type UDP to address [0.0.0.0]:6969... success.
 
 It will sit like that until you Ctrl-C.
 
-You should now be able to hit it with your browser in your host OS:  http://192.168.1.123:6969/stats
+You should now be able to hit it with your browser in your host OS using that IP address:  http://192.168.1.123:6969/stats
 
 ```
 0
@@ -60,4 +60,10 @@ opentracker serving 0 torrents
 opentracker
 ```
 
+
+I've been able to use µTorrent to create a new Torrent using UDP, specifying "udp://192.168.1.123:6969" as the tracker URL, and the count on the /stats page increases to 1.
+
+Using HTTP hasn't worked, I'm getting a 403 response.
+
+And of course the "storrent" client only supports HTTP.  *sigh*
 
