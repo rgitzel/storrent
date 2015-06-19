@@ -4,7 +4,7 @@ import java.net.URL
 
 import org.saunter.bencode.BencodeDecoder
 import org.storrent.Tracker
-import rodney.TorrentConfig
+import rodney.{TrackerResponse, TorrentConfig}
 
 import scala.io.Source._
 
@@ -19,8 +19,6 @@ object HitTracker extends App {
 
   if(t.trackerUrl.startsWith("http")) {
     val trackerResponse = fromInputStream(new URL(t.trackerUrl).openStream, "ISO8859-1").getLines.mkString("\n")
-    println("response = " + trackerResponse)
-
     println(BencodeDecoder.decode(trackerResponse).get.asInstanceOf[Map[String, Any]])
   }
   else {

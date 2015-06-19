@@ -8,13 +8,16 @@ import org.storrent.Tracker
 
 case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Long, infoSha1: String) {
 
-  // this seems to not matter... so long as it's exactly 20 chars... how did storrent work?
-  val PeerId = "ABCDABCDABCDABCDABCD"
+  // aha!  https://wiki.theory.org/BitTorrentSpecification#Tracker_Request_Parameters
 
-  val Port = 6882 // still not sure where this comes form, but this works for the Ubuntu torrent
+  // we can set this to anything, so long as it's 20 characters...
+  val PeerId = "RODNEYRODNEYRODNEYRO"
+
+  val Port = 6882 // we're not listening yet so this really doesn't matter
 
   val trackerUrl = {
     val params = Map(
+      "info_hash" -> Tracker.hexStringURLEncode(infoSha1),
       "peer_id"     -> PeerId,
       "port"        -> Port,
       "downloaded"  -> 0,
@@ -22,10 +25,10 @@ case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Lon
       "left"        -> fileLength,
       "compact"     -> 1            // http://stackoverflow.com/a/24001128/107444
     )
-    val encodedParams = params.keys.toList.sorted.map(key => key + "=" + URLEncoder.encode(params.getOrElse(key,"").toString)).mkString("&")
-    val infoSHAParam = s"info_hash=${Tracker.hexStringURLEncode(infoSha1)}"
-    val allParams = s"?${infoSHAParam}&${encodedParams}"
-    announceUrl + allParams
+
+    // combine them in key order to make testing possible
+    val encodedParams = params.toList.sortBy(_._1).map{case(k,v) => k + "=" + v}.mkString("&")
+    announceUrl + "?" + encodedParams
   }
 
   val numPieces = fileLength / pieceLength + (fileLength % pieceLength) % 2 - 1  
@@ -51,7 +54,7 @@ object TorrentConfig {
     m.getOrElse(key, throw new RuntimeException(s"torrent is missing '${key}'")).asInstanceOf[T]
 
 
-  protected def sha1(info: Map[String, Any]) = {
+  def sha1(info: Map[String, Any]) = {
     // from Tracker.assembleTrackerInfo
     val encodedInfoMap = BencodeEncoder.encode(info)
     val md = java.security.MessageDigest.getInstance("SHA-1")

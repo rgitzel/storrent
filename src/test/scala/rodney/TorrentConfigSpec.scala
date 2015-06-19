@@ -13,11 +13,11 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
 
     val expected =
       "http://foo.com/announce?" +
-        "info_hash=%ab%c1%23&" +
         "compact=1&" +
         "downloaded=0&" +
+        "info_hash=%ab%c1%23&" +
         "left=99&" +
-        "peer_id=ABCDABCDABCDABCDABCD&" +
+        "peer_id=RODNEYRODNEYRODNEYRO&" +
         "port=6882&" +
         "uploaded=0"
 
@@ -46,5 +46,15 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
       "8de8404303b38385df58054ac9be5f914e91830e" // TODO: this is wrong!!
     )
     TorrentConfig("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent") should be (expected)
+  }
+
+
+  behavior of "sha1"
+
+  // TODO: what the is wrong, here... presumably something to do with the encoding...
+  it should "generate the right hash for the ubuntu torrent" in {
+    val meta = Tracker.torrentFromBencode("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent")
+
+    TorrentConfig.sha1(meta.get("info").get.asInstanceOf[Map[String,Any]]) should be ("fc8a15a2faf2734dbb1dc5f7afdc5c9beaeb1f59")
   }
 }
