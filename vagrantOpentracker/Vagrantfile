@@ -8,12 +8,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/precise64"
 
-  # Load the bootstrap file
+  # download and compile Opentracker
   config.vm.provision :shell, :path => "opentracker.sh"
 
-  # Configure port forwarding
-#  config.vm.network :forwarded_port, guest: 80, host: 7080
-#  config.vm.network :forwarded_port, guest: 6969, host: 6979
-
+  # port-forwarding isn't enough, the Vagrant guest needs access to your host to access the BT client
   config.vm.network :public_network
 end
