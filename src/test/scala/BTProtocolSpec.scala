@@ -1,20 +1,18 @@
 package org.storrent
 
-import akka.actor.{ Actor, ActorSystem, Props}
-import akka.testkit.{ TestActorRef, TestKit, TestLatch, ImplicitSender, TestProbe }
-import scala.concurrent.duration._
-import scala.concurrent.Await
-import org.scalatest.{ WordSpec, BeforeAndAfterAll}
-import org.scalatest.matchers.MustMatchers
+import akka.actor.{Actor, ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import akka.util.ByteString
+import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
+import org.scalatest.matchers.MustMatchers
 
 class BTProtocolSpec extends TestKit(ActorSystem("BTProtocolSpec"))
 with ImplicitSender
-with WordSpec
+with WordSpecLike
 with MustMatchers
 with BeforeAndAfterAll {
-  import BTProtocol._
-  import Frame._
+  import org.storrent.BTProtocol._
+  import org.storrent.Frame._
 
   object fakeTCPClient {
   }

@@ -18,9 +18,7 @@ object Tracker {
     val metainfo = source.mkString
     source.close()
     val decodedMeta = BencodeDecoder.decode(metainfo)
-    val m = decodedMeta.get.asInstanceOf[Map[String, Any]]
-    println("keys: " + m.keys.mkString(", "))
-    m
+    decodedMeta.get.asInstanceOf[Map[String, Any]]
   }
 
   def getTorrentFileVariables(infoMap: Map[String, Any]) = {
