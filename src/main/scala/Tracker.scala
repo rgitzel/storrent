@@ -2,6 +2,7 @@ package org.storrent
 
 import akka.actor.{ Actor, ActorRef, ActorLogging, Props }
 import org.saunter.bencode._
+import scala.io.Codec
 import scala.io.Source.{ fromInputStream }
 import java.net.{ URLEncoder, URL }
 import akka.util.Timeout
@@ -14,7 +15,7 @@ object Tracker {
   def hexStringURLEncode(x: String) = { x.grouped(2).toList.map("%" + _).mkString("") }
 
   def torrentFromBencode(torrentName: String) = {
-    val source = scala.io.Source.fromFile(torrentName, "ISO-8859-1")
+    val source = scala.io.Source.fromFile(torrentName)(Codec.ISO8859)
     val metainfo = source.mkString
     source.close()
     val decodedMeta = BencodeDecoder.decode(metainfo)

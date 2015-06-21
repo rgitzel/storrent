@@ -1,5 +1,6 @@
 package rodney
 
+import org.saunter.bencode.{BencodeEncoder, BencodeDecoder}
 import org.scalatest.{FlatSpec, Matchers}
 import org.storrent.Tracker
 
@@ -43,7 +44,7 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
       "http://torrent.ubuntu.com:6969/announce",
       1150844928,
       524288,
-      "8de8404303b38385df58054ac9be5f914e91830e" // TODO: this is wrong!!
+      "fc8a15a2faf2734dbb1dc5f7afdc5c9beaeb1f59" // TODO: this is wrong!!
     )
     TorrentConfig("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent") should be (expected)
   }
@@ -56,5 +57,22 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
     val meta = Tracker.torrentFromBencode("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent")
 
     TorrentConfig.sha1(meta.get("info").get.asInstanceOf[Map[String,Any]]) should be ("fc8a15a2faf2734dbb1dc5f7afdc5c9beaeb1f59")
+  }
+
+  it should "pull out correct 'info' string" in {
+    val source = scala.io.Source.fromFile("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent", "ISO-8859-1")
+    val s = source.mkString
+    source.close()
+
+    val d = BencodeDecoder.decode(s).get.asInstanceOf[Map[String,Any]]
+    d.keys should be (Set("announce", "creation date", "announce-list", "info", "comment"))
+    val info = d.get("info").get.asInstanceOf[Map[String,Any]]
+    info.keys should be ( Set("length", "name", "piece length", "pieces"))
+    info.get("pieces").get.asInstanceOf[String].size should be (43920)
+
+    println("sha1 = " + TorrentConfig.sha1(info.get("pieces").get.asInstanceOf[String]))
+
+    val encodedInfo = BencodeEncoder.encode(info)
+    s.contains(encodedInfo) should be (true)
   }
 }
