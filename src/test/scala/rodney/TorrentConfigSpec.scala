@@ -3,6 +3,8 @@ package rodney
 import org.saunter.bencode.{BencodeEncoder, BencodeDecoder}
 import org.scalatest.{FlatSpec, Matchers}
 import org.storrent.Tracker
+import TestData2._
+
 
 class TorrentConfigSpec extends FlatSpec with Matchers {
 
@@ -33,7 +35,7 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
       "http://thomasballinger.com:6969/announce",
       1277987,
       16384,
-      "e073e640c01bde650c411c0406babe1741a698d5"
+      tomTorrentInfoSha
     )
     TorrentConfig("tom.torrent") should be (expected)
   }
@@ -44,23 +46,24 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
       "http://torrent.ubuntu.com:6969/announce",
       1150844928,
       524288,
-      "fc8a15a2faf2734dbb1dc5f7afdc5c9beaeb1f59" // TODO: this is wrong!!
+      ubuntuInfoSha
     )
-    TorrentConfig("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent") should be (expected)
+    TorrentConfig(ubuntuFilename) should be (expected)
   }
 
 
   behavior of "sha1"
 
-  // TODO: what the is wrong, here... presumably something to do with the encoding...
   it should "generate the right hash for the ubuntu torrent" in {
-    val meta = Tracker.torrentFromBencode("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent")
+    val meta = Tracker.torrentFromBencode(ubuntuFilename)
 
-    TorrentConfig.sha1(meta.get("info").get.asInstanceOf[Map[String,Any]]) should be ("fc8a15a2faf2734dbb1dc5f7afdc5c9beaeb1f59")
+    TorrentConfig.sha1(meta.get("info").get.asInstanceOf[Map[String,Any]]) should be (ubuntuInfoSha)
   }
 
+  // this came from sorting out why the SHA1 was wrong, turned out to be not passing
+  //  the encoding to .getBytes()... doesn't hurt to leave this here
   it should "pull out correct 'info' string" in {
-    val source = scala.io.Source.fromFile("src/test/resources/rodney/ubuntu-15.04-desktop-amd64.iso.torrent", "ISO-8859-1")
+    val source = scala.io.Source.fromFile(ubuntuFilename, "ISO-8859-1")
     val s = source.mkString
     source.close()
 
@@ -69,8 +72,6 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
     val info = d.get("info").get.asInstanceOf[Map[String,Any]]
     info.keys should be ( Set("length", "name", "piece length", "pieces"))
     info.get("pieces").get.asInstanceOf[String].size should be (43920)
-
-    println("sha1 = " + TorrentConfig.sha1(info.get("pieces").get.asInstanceOf[String]))
 
     val encodedInfo = BencodeEncoder.encode(info)
     s.contains(encodedInfo) should be (true)

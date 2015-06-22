@@ -72,7 +72,7 @@ object TorrentConfig {
     val md = java.security.MessageDigest.getInstance("SHA-1")
     val infoSHABytes = md.digest(s.getBytes("ISO-8859-1")).map(0xFF & _)
     val x = infoSHABytes.map { "%02x".format(_) }.foldLeft("") { _ + _ } //taken from Play
-    println("calculated sha1 = " + x)
+//    println("calculated sha1 = " + x)
     x
   }
 }

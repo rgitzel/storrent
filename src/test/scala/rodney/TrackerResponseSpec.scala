@@ -12,7 +12,7 @@ class TrackerResponseSpec extends FlatSpec with Matchers {
       "http://thomasballinger.com:6969/announce",
       1277987,
       16384,
-      "e073e640c01bde650c411c0406babe1741a698d5"
+      TestData2.tomTorrentInfoSha
     )
 
     TorrentConfig("tom.torrent") should be (expected)
