@@ -18,8 +18,8 @@ object HitTracker extends App {
   println(t.trackerUrl)
 
   if(t.trackerUrl.startsWith("http")) {
-    val trackerResponse = fromInputStream(new URL(t.trackerUrl).openStream)(Codec.ISO8859).mkString
-    println("response from tracker: " + BencodeDecoder.decode(trackerResponse).get.asInstanceOf[Map[String, Any]])
+    val trackerResponse = TrackerResponse(new URL(t.trackerUrl).openStream)
+    println("response from tracker: " + trackerResponse)
   }
   else {
     println("only http torrents for now")
