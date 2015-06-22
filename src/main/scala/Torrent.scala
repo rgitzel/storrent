@@ -13,6 +13,14 @@ object Torrent {
   case class PeerHasBitfield(peerBitfieldSet: mutable.Set[Int])
   case class PeerPieceRequest(sendingActor: ActorRef)
   case class TorrentInfo(peers: String, infoSHABytes: Array[Int], fileLength: Long, pieceLength: Long, numPieces: Long)
+
+  def peersToIp(allPeers: String) = {
+    val peers = allPeers.getBytes.grouped(6).toList.map(_.map(0xFF & _))
+//    peers.foreach(x => println(x.mkString(".")))
+    val ips = peers.map(x => x.slice(0, 4).mkString("."))
+    val ports = peers.map { x => (x(4) << 8) + x(5) } //convert 2 bytes to an int
+    ips zip ports
+  }
 }
 
 class Torrent(torrentName: String) extends Actor with ActorLogging {
@@ -27,14 +35,6 @@ class Torrent(torrentName: String) extends Actor with ActorLogging {
   val r = new scala.util.Random(0)
   var numPieces: Long = 0
   var fileContents: Array[ByteString] = Array()
-
-  def peersToIp(allPeers: String) = {
-    val peers = allPeers.getBytes.grouped(6).toList.map(_.map(0xFF & _))
-    peers.foreach(x => println(x.mkString(".")))
-    val ips = peers.map(x => x.slice(0, 4).mkString("."))
-    val ports = peers.map { x => (x(4) << 8) + x(5) } //convert 2 bytes to an int
-    ips zip ports
-  }
 
   def receive = {
     case ReceivedPiece(index, data) =>

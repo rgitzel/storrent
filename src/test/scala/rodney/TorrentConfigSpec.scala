@@ -3,7 +3,7 @@ package rodney
 import org.saunter.bencode.{BencodeEncoder, BencodeDecoder}
 import org.scalatest.{FlatSpec, Matchers}
 import org.storrent.Tracker
-import TestData2._
+import TestData._
 
 
 class TorrentConfigSpec extends FlatSpec with Matchers {

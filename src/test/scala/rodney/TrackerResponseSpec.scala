@@ -4,17 +4,19 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class TrackerResponseSpec extends FlatSpec with Matchers {
 
-  behavior of "apply from Bdecoded map"
+  behavior of "apply"
 
-  it should "work on 'tom.torrent'" in {
+  it should "work on ubuntu response" in {
+    // 300 is the size of the list in the bencoded file, and it takes 6 bytes for IP and port
+    val expectedPeers = 300 / 6
 
-    val expected = TorrentConfig(
-      "http://thomasballinger.com:6969/announce",
-      1277987,
-      16384,
-      TestData2.tomTorrentInfoSha
-    )
+    val resp = TrackerResponse("src/test/resources/rodney/ubuntu.announce.response")
 
-    TorrentConfig("tom.torrent") should be (expected)
+    resp.interval should be (1800)
+
+    resp.peers.size should be (expectedPeers)
+
+    resp.peers.head should be (("50.171.7.7", 6888))
+    resp.peers.last should be (("79.63.160.77", 45156))
   }
 }
