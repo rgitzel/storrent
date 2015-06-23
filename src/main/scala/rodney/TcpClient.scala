@@ -20,10 +20,15 @@ class TcpClient(remote: InetSocketAddress, isCompleteResponse: ByteString => Boo
 
   implicit val timeout = Timeout(5.seconds)
   val socket = IOManager(context.system).connect(remote)
-  var buffer = akka.util.ByteString()
+
+  var buffer = ByteString()
+  var done = false
 
   // TODO: better use a FSM
-  var done = false
+  protected def reset() = {
+    done = false
+    buffer = ByteString()
+  }
 
   def receive = {
     case IO.Connected(_, address) =>
@@ -47,10 +52,14 @@ class TcpClient(remote: InetSocketAddress, isCompleteResponse: ByteString => Boo
           log.debug("not done yet")
         }
       }
+      else {
+        log.error(s"not expecting anymore but got ${bytes.size} bytes: ${bytes}")
+      }
 
     case TcpClient.SendData(bytes) =>
-      log.info("writing " + bytes)
+      log.info("writing: " + bytes)
       socket.asWritable.write(bytes)
+      reset()
 
     case TcpClient.CloseConnection =>
       log.info("closing")

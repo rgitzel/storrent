@@ -24,7 +24,7 @@ object SampleFlow extends App {
     for(i <- 0 until 1) {
       val peer = trackerResponse.peers(i)
       val dl = system.actorOf(Props(new PeerInteraction(peer)), "peer-" + i)
-      dl ! PeerInteraction.DownloadPiece(t.infoSha)
+      dl ! PeerInteraction.Start(t.infoSha)
     }
 
     // TODO: sort out a reasonable shutdown...
