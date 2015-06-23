@@ -12,7 +12,7 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
 
   it should "generate URL" in {
     // at this point, these are just values, they don't have to be sensible
-    val conf = TorrentConfig("http://foo.com/announce", 99, 88, "abc123")
+    val conf = TorrentConfig("http://foo.com/announce", 99, 88, InfoSha(List(63, 64, 65), "abc123"))
 
     val expected =
       "http://foo.com/announce?" +
@@ -57,7 +57,7 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
   it should "generate the right hash for the ubuntu torrent" in {
     val meta = Tracker.torrentFromBencode(ubuntuFilename)
 
-    TorrentConfig.sha1(meta.get("info").get.asInstanceOf[Map[String,Any]]) should be (ubuntuInfoSha)
+    InfoSha.apply(meta.get("info").get.asInstanceOf[Map[String,Any]]) should be (ubuntuInfoSha)
   }
 
   // this came from sorting out why the SHA1 was wrong, turned out to be not passing

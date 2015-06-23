@@ -1,6 +1,6 @@
 package rodney
 
-import java.net.{URL, URLEncoder}
+import java.net.URL
 
 import org.saunter.bencode.{BencodeDecoder, BencodeEncoder}
 import org.storrent.Tracker
@@ -9,7 +9,7 @@ import scala.io.Codec
 import scala.io.Source._
 
 
-case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Long, infoSha1: String) {
+case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Long, infoSha: InfoSha) {
 
   // aha!  https://wiki.theory.org/BitTorrentSpecification#Tracker_Request_Parameters
 
@@ -20,7 +20,7 @@ case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Lon
 
   val trackerUrl = {
     val params = Map(
-      "info_hash" -> Tracker.hexStringURLEncode(infoSha1),
+      "info_hash" -> Tracker.hexStringURLEncode(infoSha.hexString),
       "peer_id"     -> PeerId,
       "port"        -> Port,
       "downloaded"  -> 0,
@@ -54,27 +54,12 @@ object TorrentConfig {
       getOrThrow[String]( meta, "announce"),
       getOrThrow[Long](   info, "length"),
       getOrThrow[Long](   info, "piece length"),
-      sha1(info)
+      InfoSha(info)
     )
   }
 
   protected def getOrThrow[T](m: Map[String, Any], key: String): T =
     m.getOrElse(key, throw new RuntimeException(s"torrent is missing '${key}'")).asInstanceOf[T]
-
-
-  def sha1(info: Map[String, Any]): String = {
-    // from Tracker.assembleTrackerInfo
-    val encodedInfoMap = BencodeEncoder.encode(info)
-    sha1(encodedInfoMap)
-  }
-
-  def sha1(s: String): String = {
-    val md = java.security.MessageDigest.getInstance("SHA-1")
-    val infoSHABytes = md.digest(s.getBytes("ISO-8859-1")).map(0xFF & _)
-    val x = infoSHABytes.map { "%02x".format(_) }.foldLeft("") { _ + _ } //taken from Play
-//    println("calculated sha1 = " + x)
-    x
-  }
 }
 
 

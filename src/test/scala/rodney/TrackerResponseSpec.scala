@@ -18,7 +18,7 @@ class TrackerResponseSpec extends FlatSpec with Matchers {
 
     resp.peers.size should be (expectedPeers)
 
-    resp.peers.head should be ((InetAddress.getByName("50.171.7.7"), 6888))
-    resp.peers.last should be ((InetAddress.getByName("79.141.160.77"), 45156))
+    resp.peers.head should be (PeerConfig(InetAddress.getByName("50.171.7.7"), 6888))
+    resp.peers.last should be (PeerConfig(InetAddress.getByName("79.141.160.77"), 45156))
   }
 }

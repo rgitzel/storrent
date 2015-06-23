@@ -10,7 +10,7 @@ import scala.io.Codec
 import scala.io.Source._
 
 
-case class TrackerResponse(interval: Long, peers: List[(InetAddress,Int)])
+case class TrackerResponse(interval: Long, peers: List[PeerConfig])
 
 object TrackerResponse{
 
@@ -33,9 +33,8 @@ object TrackerResponse{
     m.getOrElse(key, throw new RuntimeException(s"torrent response is missing '${key}'")).asInstanceOf[T]
 
 
-  protected def extractPeers(s: String) = {
+  protected def extractPeers(s: String) =
     Torrent.peersToIp(s).map{ case(ipString, port) =>
-      (InetAddress.getByName(ipString), port)
+      PeerConfig(InetAddress.getByName(ipString), port)
     }
-  }
 }

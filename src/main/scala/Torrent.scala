@@ -17,7 +17,7 @@ object Torrent {
   def peersToIp(allPeers: String) = {
     val peers = allPeers.getBytes("ISO-8859-1").grouped(6).toList.map(_.map(0xFF & _))
     println(s"found ${peers.size} peers in string of length ${allPeers.size}")
-    peers.zipWithIndex.foreach{case(x,n) => println(n + " " + x.mkString("."))}
+//    peers.zipWithIndex.foreach{case(x,n) => println(n + " " + x.mkString("."))}
     val ips = peers.map(x => x.slice(0, 4).mkString("."))
     val ports = peers.map { x => (x(4) << 8) + x(5) } //convert 2 bytes to an int
     ips zip ports
