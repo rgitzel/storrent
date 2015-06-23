@@ -1,5 +1,6 @@
 package rodney
 
+import java.io.File
 import java.net.URL
 
 import org.saunter.bencode.{BencodeDecoder, BencodeEncoder}
@@ -46,7 +47,7 @@ object TorrentConfig {
     apply(decodedMeta.get.asInstanceOf[Map[String, Any]])
   }
 
-  def apply(filename: String): TorrentConfig = apply(Tracker.torrentFromBencode(filename))
+  def apply(file: File): TorrentConfig = apply(Tracker.torrentFromBencode(file.getAbsolutePath))
 
   def apply(meta: Map[String, Any]): TorrentConfig = {
     val info = meta.get("info").get.asInstanceOf[Map[String, Any]]

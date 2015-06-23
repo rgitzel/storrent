@@ -10,15 +10,15 @@ import rodney.TcpClient
 object TcpClientTest extends App {
   val host = "www.sunet.se"
 
+  def httpComplete(bs: ByteString) = bs.utf8String.endsWith("\r\n\r\n")
+
   val system = ActorSystem("tcp-test")
-  val tcp = system.actorOf(Props(new TcpClient(new InetSocketAddress(host, 80))), "tcp")
+  val tcp = system.actorOf(Props(new TcpClient(new InetSocketAddress(host, 80), httpComplete, None)), "tcp")
 
   tcp ! TcpClient.SendData(ByteString("GET / HTTP/1.1\n"))
   tcp ! TcpClient.SendData(ByteString("host: " + host + "\n\n"))
 
-  Thread.sleep(5500)
-  tcp ! TcpClient.CloseConnection
-  Thread.sleep(100)
+  Thread.sleep(5000)
 
   system.shutdown()
 

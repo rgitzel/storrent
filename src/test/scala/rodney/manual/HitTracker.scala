@@ -3,8 +3,9 @@ package rodney.manual
 import java.net.{InetSocketAddress, URL}
 
 import akka.actor.{Actor, ActorSystem, Props}
+import akka.util.ByteString
 import org.storrent.Frame
-import rodney.{TcpClient, TestData, TorrentConfig, TrackerResponse}
+import rodney._
 
 object HitTracker extends App {
 
@@ -20,17 +21,14 @@ object HitTracker extends App {
     val trackerResponse = TrackerResponse(new URL(t.trackerUrl).openStream)
     println("response from tracker: " + trackerResponse)
 
-    val peer = trackerResponse.peers(0)
+    for(i <- 0 until 1) {
+      val peer = trackerResponse.peers(i)
+      val dl = system.actorOf(Props(new PieceDownloader(peer)), "peer-" + i)
+      dl ! PieceDownloader.DownloadPiece(t.infoSha)
+    }
 
-    val tcp = system.actorOf(Props(new TcpClient(new InetSocketAddress(peer.host, peer.port))), "tcp")
+    Thread.sleep(5000)
 
-    tcp ! TcpClient.SendData(Frame.createHandshakeFrame(t.infoSha.bytes.toArray))
-
-    Thread.sleep(1500)
-
-    tcp ! TcpClient.CloseConnection
-
-    Thread.sleep(100)
     system.shutdown()
   }
   else {

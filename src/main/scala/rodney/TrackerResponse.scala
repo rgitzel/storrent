@@ -1,6 +1,6 @@
 package rodney
 
-import java.io.InputStream
+import java.io.{File, InputStream}
 import java.net.{InetAddress, URL}
 
 import org.saunter.bencode.BencodeDecoder
@@ -20,7 +20,7 @@ object TrackerResponse{
     apply(m)
   }
 
-  def apply(filename: String): TrackerResponse = apply(Tracker.torrentFromBencode(filename))
+  def apply(file: File): TrackerResponse = apply(Tracker.torrentFromBencode(file.getAbsolutePath))
 
   def apply(resp: Map[String, Any]): TrackerResponse = {
     new TrackerResponse(

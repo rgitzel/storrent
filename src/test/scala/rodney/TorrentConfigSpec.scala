@@ -1,5 +1,7 @@
 package rodney
 
+import java.io.File
+
 import org.saunter.bencode.{BencodeEncoder, BencodeDecoder}
 import org.scalatest.{FlatSpec, Matchers}
 import org.storrent.Tracker
@@ -37,7 +39,7 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
       16384,
       tomTorrentInfoSha
     )
-    TorrentConfig("tom.torrent") should be (expected)
+    TorrentConfig(new File("tom.torrent")) should be (expected)
   }
 
 
@@ -48,7 +50,7 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
       524288,
       ubuntuInfoSha
     )
-    TorrentConfig(ubuntuFilename) should be (expected)
+    TorrentConfig(new File(ubuntuFilename)) should be (expected)
   }
 
 

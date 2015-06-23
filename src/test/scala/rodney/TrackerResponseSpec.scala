@@ -1,8 +1,10 @@
 package rodney
 
+import java.io.File
 import java.net.InetAddress
 
 import org.scalatest.{FlatSpec, Matchers}
+
 
 class TrackerResponseSpec extends FlatSpec with Matchers {
 
@@ -12,7 +14,7 @@ class TrackerResponseSpec extends FlatSpec with Matchers {
     // 300 is the size of the list in the bencoded file, and it takes 6 bytes for IP and port
     val expectedPeers = 300 / 6
 
-    val resp = TrackerResponse("src/test/resources/rodney/ubuntu.announce.response")
+    val resp = TrackerResponse(new File("src/test/resources/rodney/ubuntu.announce.response"))
 
     resp.interval should be (1800)
 

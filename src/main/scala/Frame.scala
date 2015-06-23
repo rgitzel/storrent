@@ -30,6 +30,7 @@ object Frame {
     val reserved: Array[Byte] = Array.fill(8) { 0 }
     val info_hash_local: Array[Byte] = info_hash.map(_.toByte)
     val handshake: Array[Byte] = pstrlen ++ pstr ++ reserved ++ info_hash_local ++ info_hash_local //FIXME: peer_id should not be info_hash
+println("handshake = " + handshake.map(_.toInt).toList.mkString(" "))
     ByteString.fromArray(handshake, 0, handshake.length)
   }
 
@@ -41,6 +42,7 @@ object Frame {
       case 323119476 => 64 //Handshake uses a different frame format
       case n => n
     }
+    println("length = " + length)
     if (length > localBuffer.length - 4) // incomplete frame
       return (0, None)
 
