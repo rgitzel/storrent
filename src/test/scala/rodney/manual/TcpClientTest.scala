@@ -16,7 +16,7 @@ object TcpClientTest extends App {
   tcp ! TcpClient.SendData(ByteString("GET / HTTP/1.1\n"))
   tcp ! TcpClient.SendData(ByteString("host: " + host + "\n\n"))
 
-  Thread.sleep(1500)
+  Thread.sleep(5500)
   tcp ! TcpClient.CloseConnection
   Thread.sleep(100)
 

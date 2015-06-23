@@ -16,10 +16,10 @@ object HitTracker extends App {
   println(t.trackerUrl)
 
   if(t.trackerUrl.startsWith("http")) {
+
     val trackerResponse = TrackerResponse(new URL(t.trackerUrl).openStream)
     println("response from tracker: " + trackerResponse)
 
-    // can we hit a peer now?
     val peer = trackerResponse.peers(0)
 
     val tcp = system.actorOf(Props(new TcpClient(new InetSocketAddress(peer.host, peer.port))), "tcp")
