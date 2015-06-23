@@ -10,9 +10,9 @@ import scala.io.Codec
 import scala.io.Source._
 
 
-case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Long, infoSha: InfoSha) {
+case class TrackerConfig(announceUrl: String, fileLength: Long, pieceLength: Long, infoSha: InfoSha) {
 
-  // aha!  https://wiki.theory.org/BitTorrentSpecification#Tracker_Request_Parameters
+  // https://wiki.theory.org/BitTorrentSpecification#Tracker_Request_Parameters
 
   // we can set this to anything, so long as it's 20 characters...
   val PeerId = "RODNEYRODNEYRODNEYRO"
@@ -39,19 +39,19 @@ case class TorrentConfig(announceUrl: String, fileLength: Long, pieceLength: Lon
 }
 
 
-object TorrentConfig {
+object TrackerConfig {
 
-  def apply(url: URL): TorrentConfig = {
+  def apply(url: URL): TrackerConfig = {
     val trackerResponse = fromInputStream(url.openStream)(Codec.ISO8859).mkString
     val decodedMeta = BencodeDecoder.decode(trackerResponse)
     apply(decodedMeta.get.asInstanceOf[Map[String, Any]])
   }
 
-  def apply(file: File): TorrentConfig = apply(Tracker.torrentFromBencode(file.getAbsolutePath))
+  def apply(file: File): TrackerConfig = apply(Tracker.torrentFromBencode(file.getAbsolutePath))
 
-  def apply(meta: Map[String, Any]): TorrentConfig = {
+  def apply(meta: Map[String, Any]): TrackerConfig = {
     val info = meta.get("info").get.asInstanceOf[Map[String, Any]]
-    new TorrentConfig(
+    new TrackerConfig(
       getOrThrow[String]( meta, "announce"),
       getOrThrow[Long](   info, "length"),
       getOrThrow[Long](   info, "piece length"),

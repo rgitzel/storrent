@@ -15,10 +15,11 @@ object TcpClient {
 
 // c.f. https://gist.github.com/jboner/4451490
 
-class TcpClient(server: InetSocketAddress, isComplete: ByteString => Boolean, caller: Option[ActorRef]) extends Actor with ActorLogging {
+// TODO: caller should be pulled from the SendData message and cached until the response is done... something for the FSM version
+class TcpClient(remote: InetSocketAddress, isCompleteResponse: ByteString => Boolean, caller: Option[ActorRef]) extends Actor with ActorLogging {
 
   implicit val timeout = Timeout(5.seconds)
-  val socket = IOManager(context.system).connect(server)
+  val socket = IOManager(context.system).connect(remote)
   var buffer = akka.util.ByteString()
 
   // TODO: better use a FSM
@@ -26,38 +27,34 @@ class TcpClient(server: InetSocketAddress, isComplete: ByteString => Boolean, ca
 
   def receive = {
     case IO.Connected(_, address) =>
-      log.error("Connected")
+      log.info("Connected")
 
     case IO.Closed(_, cause) =>
-      log.error(s"connection to ${socket} closed: ${cause}")
+      log.info(s"connection to ${socket} closed: ${cause}")
       socket.close
 
     case IO.Read(_, bytes) =>
       if(!done) {
         buffer = buffer ++ bytes
-        log.error(s"read ${bytes.size} bytes")
-        if(isComplete(bytes)) {
-          log.error(s"done! got ${buffer.size} bytes total")
+        log.info(s"read ${bytes.size} bytes")
+        if(isCompleteResponse(bytes)) {
+          log.info(s"done! got ${buffer.size} bytes total")
+          log.debug(s"received: ${buffer.utf8String.take(400)}...${buffer.utf8String.takeRight(400)}")
           done = true
-          log.error(sender.toString())
           caller.map(_ ! TcpClient.CompletedResponse(buffer))
         }
         else {
-          //        log.error("not done yet")
+          log.debug("not done yet")
         }
       }
 
     case TcpClient.SendData(bytes) =>
-      log.error("writing " + bytes.utf8String)
+      log.info("writing " + bytes.utf8String)
       socket.asWritable.write(bytes)
 
     case TcpClient.CloseConnection =>
-      log.error("closing")
-//      log.error(s"received: ${buffer.utf8String.take(400)}...${buffer.utf8String.takeRight(400)}")
+      log.info("closing")
       socket.close
   }
 }
-
-
-
 

@@ -26,16 +26,16 @@ class PieceDownloader(peer: PeerConfig) extends Actor with ActorLogging {
       tcp ! TcpClient.SendData(Frame.createHandshakeFrame(infoSha.bytes.toArray))
 
     case TcpClient.CompletedResponse(bytes) =>
-      println("response bytes: " + bytes)
+      log.info("response bytes: " + bytes)
 
       if(!gotFirstResponse) {
-        println("Sending Interested message")
+        log.info("Sending Interested message")
         tcp ! TcpClient.SendData(Frame.createInterestedFrame())
       }
       else {
         Frame.parseFrame(bytes) match {
           case (_, Some(message)) =>
-            println("got peer response: " + PeerResponse.determineResponse(message))
+            log.info("got peer response: " + PeerResponse.determineResponse(message))
           case other =>
             log.error("got bad peer response: " + PeerResponse.determineResponse(bytes))
         }

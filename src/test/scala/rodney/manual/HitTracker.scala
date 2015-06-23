@@ -11,7 +11,7 @@ object HitTracker extends App {
 
   val system = ActorSystem("rodney-storrent")
 
-  val t = TorrentConfig(TestData.ubuntuUrl)
+  val t = TrackerConfig(TestData.ubuntuUrl)
 //  val t = TorrentConfig(TestData.ubuntuFilename)
 
   println(t.trackerUrl)
@@ -27,6 +27,7 @@ object HitTracker extends App {
       dl ! PieceDownloader.DownloadPiece(t.infoSha)
     }
 
+    // TODO: sort out a reasonable shutdown...
     Thread.sleep(5000)
 
     system.shutdown()

@@ -8,13 +8,13 @@ import org.storrent.Tracker
 import TestData._
 
 
-class TorrentConfigSpec extends FlatSpec with Matchers {
+class TrackerConfigSpec extends FlatSpec with Matchers {
 
   behavior of "trackerUrl"
 
   it should "generate URL" in {
     // at this point, these are just values, they don't have to be sensible
-    val conf = TorrentConfig("http://foo.com/announce", 99, 88, InfoSha(List(63, 64, 65), "abc123"))
+    val conf = TrackerConfig("http://foo.com/announce", 99, 88, InfoSha(List(63, 64, 65), "abc123"))
 
     val expected =
       "http://foo.com/announce?" +
@@ -33,24 +33,24 @@ class TorrentConfigSpec extends FlatSpec with Matchers {
   behavior of "apply from Bdecoded file"
 
   it should "work on 'tom.torrent'" in {
-    val expected = TorrentConfig(
+    val expected = TrackerConfig(
       "http://thomasballinger.com:6969/announce",
       1277987,
       16384,
       tomTorrentInfoSha
     )
-    TorrentConfig(new File("tom.torrent")) should be (expected)
+    TrackerConfig(new File("tom.torrent")) should be (expected)
   }
 
 
   it should "work on ubuntu" in {
-    val expected = TorrentConfig(
+    val expected = TrackerConfig(
       "http://torrent.ubuntu.com:6969/announce",
       1150844928,
       524288,
       ubuntuInfoSha
     )
-    TorrentConfig(new File(ubuntuFilename)) should be (expected)
+    TrackerConfig(new File(ubuntuFilename)) should be (expected)
   }
 
 
