@@ -1,18 +1,19 @@
-package rodney
+package rodney.peer
 
 import java.net.InetSocketAddress
 
-import akka.actor.{Props, ActorLogging, Actor}
+import akka.actor.{Actor, ActorLogging, Props}
 import akka.util.ByteString
 import org.storrent.Frame
+import rodney.{InfoSha, TcpClient}
 
 
-object PieceDownloader {
+object PeerInteraction {
   case class DownloadPiece(infoSha: InfoSha)
 }
 
 
-class PieceDownloader(peer: PeerConfig) extends Actor with ActorLogging {
+class PeerInteraction(peer: PeerConfig) extends Actor with ActorLogging {
 
   val tcp = context.system.actorOf(
     Props(new TcpClient(new InetSocketAddress(peer.host, peer.port), pieceComplete, Some(self))),
@@ -22,7 +23,7 @@ class PieceDownloader(peer: PeerConfig) extends Actor with ActorLogging {
   var gotFirstResponse = false
 
   def receive = {
-    case PieceDownloader.DownloadPiece(infoSha) =>
+    case PeerInteraction.DownloadPiece(infoSha) =>
       tcp ! TcpClient.SendData(Frame.createHandshakeFrame(infoSha.bytes.toArray))
 
     case TcpClient.CompletedResponse(bytes) =>

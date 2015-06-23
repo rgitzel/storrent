@@ -1,4 +1,4 @@
-package rodney
+package rodney.peer
 
 import akka.util.ByteString
 import org.storrent.BTProtocol._

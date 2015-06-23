@@ -1,4 +1,4 @@
-package rodney
+package rodney.peer
 
 import java.net.InetAddress
 

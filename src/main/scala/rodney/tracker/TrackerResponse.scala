@@ -1,10 +1,11 @@
-package rodney
+package rodney.tracker
 
 import java.io.{File, InputStream}
-import java.net.{InetAddress, URL}
+import java.net.InetAddress
 
 import org.saunter.bencode.BencodeDecoder
 import org.storrent.{Torrent, Tracker}
+import rodney.peer.PeerConfig
 
 import scala.io.Codec
 import scala.io.Source._

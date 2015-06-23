@@ -49,7 +49,7 @@ class TcpClient(remote: InetSocketAddress, isCompleteResponse: ByteString => Boo
       }
 
     case TcpClient.SendData(bytes) =>
-      log.info("writing " + bytes.utf8String)
+      log.info("writing " + bytes)
       socket.asWritable.write(bytes)
 
     case TcpClient.CloseConnection =>

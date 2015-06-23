@@ -1,15 +1,15 @@
 package rodney.manual
 
-import java.net.{InetSocketAddress, URL}
+import java.net.URL
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.util.ByteString
-import org.storrent.Frame
+import akka.actor.{ActorSystem, Props}
 import rodney._
+import rodney.peer.PeerInteraction
+import rodney.tracker.{TrackerConfig, TrackerResponse}
 
-object HitTracker extends App {
+object SampleFlow extends App {
 
-  val system = ActorSystem("rodney-storrent")
+  val system = ActorSystem("rodney-torrent")
 
   val t = TrackerConfig(TestData.ubuntuUrl)
 //  val t = TorrentConfig(TestData.ubuntuFilename)
@@ -23,12 +23,12 @@ object HitTracker extends App {
 
     for(i <- 0 until 1) {
       val peer = trackerResponse.peers(i)
-      val dl = system.actorOf(Props(new PieceDownloader(peer)), "peer-" + i)
-      dl ! PieceDownloader.DownloadPiece(t.infoSha)
+      val dl = system.actorOf(Props(new PeerInteraction(peer)), "peer-" + i)
+      dl ! PeerInteraction.DownloadPiece(t.infoSha)
     }
 
     // TODO: sort out a reasonable shutdown...
-    Thread.sleep(5000)
+    Thread.sleep(10000)
 
     system.shutdown()
   }

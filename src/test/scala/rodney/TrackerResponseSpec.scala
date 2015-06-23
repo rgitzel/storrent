@@ -4,6 +4,8 @@ import java.io.File
 import java.net.InetAddress
 
 import org.scalatest.{FlatSpec, Matchers}
+import rodney.peer.PeerConfig
+import rodney.tracker.TrackerResponse
 
 
 class TrackerResponseSpec extends FlatSpec with Matchers {

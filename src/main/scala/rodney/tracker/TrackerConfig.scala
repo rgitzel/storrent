@@ -1,10 +1,11 @@
-package rodney
+package rodney.tracker
 
 import java.io.File
 import java.net.URL
 
-import org.saunter.bencode.{BencodeDecoder, BencodeEncoder}
+import org.saunter.bencode.BencodeDecoder
 import org.storrent.Tracker
+import rodney.InfoSha
 
 import scala.io.Codec
 import scala.io.Source._

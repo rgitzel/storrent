@@ -6,6 +6,7 @@ import org.saunter.bencode.{BencodeEncoder, BencodeDecoder}
 import org.scalatest.{FlatSpec, Matchers}
 import org.storrent.Tracker
 import TestData._
+import rodney.tracker.TrackerConfig
 
 
 class TrackerConfigSpec extends FlatSpec with Matchers {
