@@ -1,3 +1,7 @@
+This mangling of 'storrent' comes to you via our [local Scala Meetup](http://www.meetup.com/vancouver-scala/events/223245900/).   I've made some tweaks, fixed encoding issues ("macintosh" doesn't work for everyone! ;-) started a different implementation for my own experience.   Maybe I'll work on it some more...
+
+-----------------
+
 This is a BitTorrent client, written to learn how to use akka and structure a program around actors.
 
 The program is organized along the lines of what's suggested in Joe Armstrong's Programming Erlang, with seperate actors for each 'chunk' of state. The one exception is an actor that was split up in order to make unit testing easier.
